@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>CSS Table Styling</title>
+	<style>
+		table {
+			text-align: center;
+			width: 650px;
+			font-family: Verdana;
+			border-collapse: collapse;
+		}
+		
+		caption {
+			color: green;
+			font-weight: bold;
+			font-size: 35px;
+			padding: 10px;
+		}
+		
+		th {
+			background-color: yellow;
+			border: 2px solid black;
+			padding: 5px;
+			width: 20%;
+		}
+		
+		td {
+			border: 2px dotted blue;
+			padding: 5px;
+			width: 20%;
+		}
+		
+		.highs {color: red;}
+		.lows {color: blue;}
+	</style>
+</head>
+
+<body>
+
+<table>
+	<caption>Five Day Forcast</caption>
+	<tr>
+		<th>Monday</th>
+		<th>Tuesday</th>
+		<th>Wednesday</th>
+		<th>Thursday</th>
+		<th>Friday</th>
+	</tr>
+	
+	<tr>
+		<td class="highs">68</td>
+		<td class="highs">68</td>
+		<td class="highs">70</td>
+		<td class="highs">73</td>
+		<td class="highs">62</td>
+	</tr>
+	
+	<tr>
+		<td class="lows">53</td>
+		<td class="lows">56</td>
+		<td class="lows">52</td>
+		<td class="lows">58</td>
+		<td class="lows">50</td>
+	</tr>
+	
+	<tr>
+		<td>Thunderstorms</td>
+		<td>Partly Cloudy</td>
+		<td>Chance of Rain</td>
+		<td>Clear</td>
+		<td>Windy</td>
+	</tr>
+	
+	<tr>
+		<td><img src="images/tstorms.jpg" alt="A picture of a storm."></td>
+		<td><img src="images/pcloudy.jpg" alt="A picture of a storm."></td>
+		<td><img src="images/chancerain.jpg" alt="A picture of a storm."></td>
+		<td><img src="images/clear-1.jpg" alt="A picture of a storm."></td>
+		<td><img src="images/windy.jpg" alt="A picture of a storm."></td>
+	</tr>
+</table>
+
+</body>
+</html>
+
+
+
+
+

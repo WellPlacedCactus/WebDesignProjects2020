@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<style>
+			body {
+				margin: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+
+			/**
+			 * Nathan Vu
+			 * Tulsa Community College
+			 * Started and finished June 29th, 2021
+			 * Finished at around 11:30 PM lmao
+			 * **/
+
+
+			///////////////////////////////////////////////////////// global variables
+
+			const randint = (min, max) => Math.floor(Math.random() * (max - min) + min + 1);
+			const rands = () => Math.random() < 0.5 ? -1 : 1;
+			const canvas = document.createElement('canvas');
+			const c = canvas.getContext('2d');
+			const mouse = {};
+			const keys = [];
+			canvas.width = innerWidth;
+			canvas.height = innerHeight;
+			document.body.append(canvas);
+			mouse.x = 0;
+			mouse.y = 0;
+			mouse.buttons = [false, false, false];
+
+			///////////////////////////////////////////////////////// handle events
+
+			window.oncontextmenu = e => e.preventDefault();
+			window.onresize = () => { canvas.width = innerWidth; canvas.height = innerHeight; };
+			window.onmousemove = ({ x, y }) => { mouse.x = x; mouse.y = y; };
+			window.onmousedown = ({ button }) => mouse.buttons[button] = true;
+			window.onmouseup = ({ button }) => mouse.buttons[button] = false;
+			window.onkeydown = ({ keyCode }) => keys[keyCode] = true;
+			window.onkeyup = ({ keyCode }) => keys[keyCode] = false;
+
+			///////////////////////////////////////////////////////// game setup
+
+			const getRandomColor = () => `rgb(${randint(0, 255)}, ${randint(0, 255)}, ${randint(0, 255)})`;
+			
+			const colliding = (rect1, rect2) => (
+				rect1.x < rect2.x + rect2.w &&
+				rect1.x + rect1.w > rect2.x &&
+				rect1.y < rect2.y + rect2.h &&
+				rect1.y + rect1.h > rect2.y
+			);
+
+			const camera = {
+				x: 0,
+				y: 0
+			};
+			const drawEntity = ({x, y, w, h, col}) => {
+				c.fillStyle = col;
+				c.fillRect(x - camera.x, y - camera.y, w, h);
+			};
+
+			const backgroundColor = getRandomColor();
+			const platforms = [];
+			const platformWidth = 100;
+			const platformHeight = 10;
+			const platformMargin = 150;
+
+			const player = {
+				dx: platformWidth / 2 - 16,
+				dy: 0,
+				x: platformWidth / 2 - 16,
+				// y: -999 * (platformMargin + platformHeight),
+				y: 0,
+				w: 32,
+				h: 32,
+				col: getRandomColor(),
+				vx: 0,
+				vy: 0,
+				acc: 1,
+				vm: 10,
+				canJump: true
+			};
+
+			let secondsWasted = 0;
+			setInterval(() => {
+				secondsWasted += 1;
+			}, 1000);
+
+			for (let y = 0; y < 1000; y++) {
+				if (y == 0) {
+					platforms.push({
+						x: -(platformWidth * 20) / 2,
+						y: -y * (platformMargin + platformHeight),
+						w: platformWidth * 20,
+						h: platformHeight,
+						col: getRandomColor()
+					});
+				} else if (y == 999) {
+					platforms.push({
+						x: -(platformWidth * 20) / 2,
+						y: -y * (platformMargin + platformHeight),
+						w: platformWidth * 20,
+						h: platformHeight,
+						col: getRandomColor()
+					});
+				} else {
+					platforms.push({
+						x: randint(-platformWidth * 2, platformWidth * 2),
+						y: -y * (platformMargin + platformHeight),
+						w: platformWidth,
+						h: platformHeight,
+						col: getRandomColor()
+					});
+				}
+			}
+
+			///////////////////////////////////////////////////////// loop
+
+			function handleInput() {
+				///////////////////////////////////////////////////// right
+				if (keys[39]) {
+					player.vx += player.acc;
+					if (player.vx > player.vm) player.vx = player.vm;
+				} else {
+					if (player.vx > 0) {
+						player.vx -= player.acc;
+						if (player.vx < 0) player.vx = 0;
+					}
+				}
+				///////////////////////////////////////////////////// left
+				if (keys[37]) {
+					player.vx -= player.acc;
+					if (player.vx < -player.vm) player.vx = -player.vm;
+				} else {
+					if (player.vx < 0) {
+						player.vx += player.acc;
+						if (player.vx > 0) player.vx = 0;
+					}
+				}
+				///////////////////////////////////////////////////// jumping
+				if (keys[17] && player.canJump) {
+					player.vy -= 20;
+					player.canJump = false;
+				}
+				///////////////////////////////////////////////////// reset
+				if (keys[82]) {
+					player.x = player.dx;
+					player.y = player.dy;
+					player.vx = 0;
+					player.vy = 0;
+				}
+			}
+
+			function moveAndCollide() {
+				///////////////////////////////////////////////////// apply gravity
+				player.vy += 1;
+				if (player.vy > player.vm * 4) player.vy = player.vm * 4;
+				///////////////////////////////////////////////////// x-axis
+				player.x += player.vx;
+				///////////////////////////////////////////////////// y-axis
+				player.y += player.vy;
+				platforms.forEach(p => {
+					if (colliding(player, p)) {
+						if (player.vy > 0) {
+							if (player.y > p.y - player.h) {
+								player.y = p.y - player.h;
+								player.vy = 0;
+								player.canJump = true;
+							}
+						}
+					}
+				});
+				///////////////////////////////////////////////////// adjust camera
+				camera.x += (player.x - camera.x - (canvas.width - player.w) / 2) / 25;
+				camera.y += (player.y - camera.y - (canvas.height - player.h) / 2) / 25;
+			}
+
+			(function loop(){
+
+				///////////////////////////////////////////////////// clear
+				c.fillStyle = 'white';
+				c.fillRect(0, 0, canvas.width, canvas.height);
+
+				///////////////////////////////////////////////////// tick player
+				handleInput();
+				moveAndCollide();
+
+				///////////////////////////////////////////////////// draw entities
+				drawEntity(player);
+				platforms.forEach(p => drawEntity(p));
+
+				///////////////////////////////////////////////////// hud
+				const platformsLeft = Math.floor(((platformHeight + platformMargin) * 1000 + player.y) / (platformHeight + platformMargin));
+
+				c.font = '30px Comic Sans MS';
+				c.fillStyle = 'black';
+				c.fillText(`platforms left: ${platformsLeft}`, 25, 50);
+				c.fillText(`seconds of ur life wasted: ${secondsWasted}`, 25, 100);
+				c.fillText('get to the top...', 25, 150);
+				c.fillText('hit r to go back to the base platform', 25, 200);
+
+				c.fillStyle = 'red';
+				c.fillText('congrats...', -camera.x, -1000 * (platformMargin + platformHeight) - camera.y);
+
+				requestAnimationFrame(loop);
+			})();
+
+		</script>
+	</body>
+</html>

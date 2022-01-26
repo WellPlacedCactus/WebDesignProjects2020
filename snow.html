@@ -1,0 +1,175 @@
+<style>canvas { position: absolute; top: 0px; left: 0px; }</style>
+<script>
+
+window.onload = function() {
+
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d');
+const mouse = {};
+document.body.appendChild(canvas);
+resize();
+
+class RGBAValue {
+	constructor(r, g, b, a) {
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
+	}
+
+	toString() {
+		return `rgba(
+      ${this.r},
+      ${this.g},
+      ${this.b},
+      ${this.a / 255})`;
+	}
+}
+
+class Particle {
+	constructor(x, y, r, c, velX, velY) {
+		this.x = x;
+		this.y = y;
+		this.r = r;
+		this.c = c;
+		this.velX = velX;
+		this.velY = velY;
+		this.id = randi(0, 10000);
+	}
+
+	changeColor() {
+		this.c.r = (this.x * 255) / canvas.width;
+		this.c.g = (this.y * 255) / canvas.height;
+		this.c.b = 255 / 2;
+	}
+
+	move() {
+		this.changeColor();
+		this.x += this.velX;
+		this.y += this.velY;
+
+		if (this.x - this.r < 0) {
+			this.velX *= -1;
+			this.x = this.r;
+		}
+
+		if (this.x + this.r > canvas.width) {
+			this.velX *= -1;
+			this.x = canvas.width - this.r;
+		}
+
+		if (this.y - this.r < 0) {
+			this.velY *= -1;
+			this.y = this.r;
+		}
+
+		if (this.y + this.r > canvas.height) {
+			this.velY *= -1;
+			this.y = canvas.height - this.r;
+		}
+	}
+
+	draw() {
+		context.fillStyle = this.c.toString();
+		context.beginPath();
+		context.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+		context.fill();
+	}
+}
+
+const particles = [];
+
+function start() {
+	for (let i = 0; i < 50; i++) {
+		particles.push(new Particle(
+			randi(0, canvas.width),
+			randi(0, canvas.height),
+			randi(10, 20),
+			new RGBAValue(255, 255, 255, 255),
+			randi(1, 5) * rands(),
+			randi(1, 5) * rands()
+		));
+	}
+	requestAnimationFrame(loop);
+}
+
+function loop() {
+	requestAnimationFrame(loop);
+
+	context.fillStyle = 'rgba(0, 0, 0, 0)';
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	particles.forEach(particle => {
+		particle.move();
+		particle.draw();
+	});
+	particles.forEach(particle1 => {
+		particles.forEach(particle2 => {
+			if (particle1.id == particle2.id) return;
+			if (collision(particle1, particle2)) {
+
+				newVelX1 = (particle1.velX * (particle1.r - particle2.r) + (2 * particle2.r * particle2.velX)) / (particle1.r + particle2.r);
+				newVelY1 = (particle1.velY * (particle1.r - particle2.r) + (2 * particle2.r * particle2.velY)) / (particle1.r + particle2.r);
+				newVelX2 = (particle2.velX * (particle2.r - particle1.r) + (2 * particle1.r * particle1.velX)) / (particle1.r + particle2.r);
+				newVelY2 = (particle2.velY * (particle2.r - particle1.r) + (2 * particle1.r * particle1.velY)) / (particle1.r + particle2.r);
+
+				particle1.velX = newVelX1;
+				particle1.velY = newVelY1;
+				particle2.velX = newVelX2;
+				particle2.velY = newVelY2;
+
+				particle1.x = particle1.x + newVelX1;
+				particle1.y = particle1.y + newVelY1;
+				particle2.x = particle2.x + newVelX2;
+				particle2.y = particle2.y + newVelY2;
+			}
+		});
+	});
+}
+
+function resize() {
+	canvas.width = window.innerWidth - 1;
+	canvas.height = window.innerHeight - 1;
+}
+
+function mousemove(e) {
+	mouse.x = e.x;
+	mouse.y = e.y;
+}
+
+function mousedown() {
+	mouse.down = true;
+}
+
+function mouseup() {
+	mouse.down = false;
+}
+
+function randi(min, max) {
+	return Math.floor(Math.random() * (max - min) + min);
+}
+
+function rands() {
+	return Math.random() < 0.5 ? -1 : 1;
+}
+
+function collision(c1, c2) { // Circle {x, y, r}
+	const dx = c1.x - c2.x;
+	const dy = c1.y - c2.y;
+	const dist = Math.sqrt(dx * dx + dy * dy);
+	const radii = c1.r + c2.r;
+	if (dist < radii) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+window.onresize = resize;
+window.onmousemove = mousemove;
+window.onmousedown = mousedown;
+window.onmouseup = mouseup;
+start();
+
+};
+
+</script>

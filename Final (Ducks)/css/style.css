@@ -1,0 +1,125 @@
+
+/* ALL PAGES */
+
+body {
+	font-family: Arial, Tahoma, sans-serif;
+	font-size: 18px;
+	font-style: normal;
+	background-color: black;
+	background-image: url("../images/stare.jpg");
+	background-repeat: none;
+}
+
+h1, h2, h3 { 
+	text-align: left;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.nav:link { color: black; }
+.nav:visited { color: purple; }
+.nav:hover { color: blue; }
+.nav:active { color: red; }
+
+/* SECTIONS */
+
+.section {
+	width: 960px;
+	margin: 0px auto;
+	text-align: center;
+	padding: 10px 20px;
+	background-color: rgba(255, 255, 255, 0.8);
+}
+
+.header {
+	border: 2px solid red;
+}
+
+.navbar {
+	border: 2px solid green;
+}
+
+.content {
+	border: 2px solid blue;
+}
+
+.footer {
+	border: 2px solid purple;
+	text-align: right;
+	font-size: 90%;
+}
+
+/* HOME PAGE */
+
+.decor {
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', sans-serif;
+	font-style: oblique;
+	font-weight: bold;
+	font-size: 120%;
+	text-decoration: underline;
+}
+
+.decor:hover { color: blue; }
+.decor:active { color: red; }
+
+.mallard {
+	color: #26de81;
+}
+
+.pekin {
+	color: #fd9644;
+}
+
+.marbled {
+	color: #778ca3;
+}
+
+.crested {
+	color: #a55eea;
+}
+
+.canvasback {
+	color: #fc5c65;
+}
+
+/* STATS PAGE */
+
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+table {
+	position: relative;
+	left: 50%;
+	transform: translate(-50%, 0);
+	z-index: 100;
+	background-image: url("../images/gradient.jpg");
+}
+
+form {
+	text-align: left;
+	margin: 10px 0px;
+	background-color: whitesmoke;
+}
+
+/* VIDOES PAGE */
+
+.abs {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 100px;
+	color: white;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.clear {
+	clear: both;
+}

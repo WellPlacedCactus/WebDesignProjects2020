@@ -1,0 +1,69 @@
+<script>
+
+const canvas = document.createElement('canvas');
+const c = canvas.getContext('2d');
+const mouse = {};
+const entities = [];
+let down = false;
+
+class Entity {constructor(x, y, r, c, velX, velY) {
+this.x = x;
+this.y = y;
+this.r = r;
+this.c = c;
+this.velX = velX;
+this.velY = velY;
+}
+tick() {
+
+const scale = down ? 0.5 : 1;
+const vx = this.velX * scale;
+const vy = this.velY * scale;
+this.x += vx;
+this.y += vy;
+
+if (this.x + this.r < 0 || this.y + this.r < 0 || this.x - this.r > canvas.width || this.y - this.r > canvas.height) this.dead = true;
+c.fillStyle = this.c;
+c.beginPath();
+c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+c.fill();
+}}
+
+window.onload = function() {
+canvas.width = 640;
+canvas.height = 480;
+document.body.appendChild(canvas);
+requestAnimationFrame(loop);
+}
+
+function loop() {
+requestAnimationFrame(loop);
+c.fillStyle = 'black';
+c.fillRect(0, 0, canvas.width, canvas.height);
+for (let i = 0; i <= 360; i += 10) {
+let rad = i * 180 / Math.PI + Math.random();
+entities.push(new Entity(mouse.x, mouse.y, randi(1, 10), 'white', Math.cos(rad) * randi(5, 10), Math.sin(rad) * randi(5, 10)));
+}
+for (let i = entities.length - 1; i >= 0; --i) {
+const e = entities[i];
+e.tick();
+if (e.dead) entities.splice(i, 1);
+}
+}
+
+function randi(min, max) {
+return Math.floor(Math.random() * (max - min) + min);
+}
+
+canvas.onmousemove = e => {mouse.x = e.x; mouse.y = e.y};
+canvas.onmousedown = () => {mouse.down = true};
+canvas.onmouseup = () => {mouse.down = false};
+window.onkeydown = () => {down = true};
+window.onkeyup = () => {down = false};
+
+</script>
+
+
+
+
+
